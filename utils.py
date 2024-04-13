@@ -52,7 +52,7 @@ def get_connection(database="company"):
 def create_table():
     """Создание БД, создание таблиц"""
 
-    conn = psycopg2.connect(host="localhost", database="company", user="postgres", password="12345")
+    conn = get_connection()
     conn.autocommit = True
     cur = conn.cursor()
 
@@ -64,7 +64,7 @@ def create_table():
 
     conn.close()
 
-    conn = psycopg2.connect(host="localhost", database="postgres", user="postgres", password="12345")
+    conn = get_connection('postgres')
     conn.autocommit = True
     cur = conn.cursor()
 

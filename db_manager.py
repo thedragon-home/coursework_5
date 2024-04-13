@@ -1,5 +1,8 @@
 import psycopg2
 
+def get_connection():
+    return psycopg2.connect(host="localhost", database="company",
+                           user="postgres", password="12345")
 
 class DBManager:
     '''Класс для подключения к БД'''
@@ -7,11 +10,9 @@ class DBManager:
     def get_companies_and_vacancies_count(self):
         '''получает список всех компаний и количество вакансий у каждой компании.'''
 
-        with psycopg2.connect(host="localhost", database="company",
-                              user="postgres", password="12345") as conn:
-
+        with get_connection() as conn:
             with conn.cursor() as cur:
-                cur.execute(f"SELECT company_name, COUNT(vacancies_name) AS count_vacancies  "
+                cur.execute(f"SELECT company_name, COUNT(vacancies_name) AS count_vacancies "
                             f"FROM employers "
                             f"JOIN vacancies USING (employer_id) "
                             f"GROUP BY employers.company_name")
@@ -25,9 +26,7 @@ class DBManager:
         ''' получает список всех вакансий с указанием названия компании,
         названия вакансии и зарплаты и ссылки на вакансию.'''
 
-        with psycopg2.connect(host="localhost", database="company",
-                              user="postgres", password="12345") as conn:
-
+        with get_connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(f"SELECT employers.company_name, vacancies.vacancies_name, "
                             f"vacancies.payment, vacancies_url "
@@ -42,9 +41,7 @@ class DBManager:
     def get_avg_salary(self):
         '''получает среднюю зарплату по вакансиям'''
 
-        with psycopg2.connect(host="localhost", database="company",
-                              user="postgres", password="12345") as conn:
-
+        with get_connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(f"SELECT AVG(payment) as avg_payment FROM vacancies ")
                 result = cur.fetchall()
@@ -55,9 +52,7 @@ class DBManager:
 
     def get_vacancies_with_higher_salary(self):
         '''получает список всех вакансий, у которых зарплата выше средней по всем вакансиям.'''
-        with psycopg2.connect(host="localhost", database="company",
-                              user="postgres", password="12345") as conn:
-
+        with get_connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(f"SELECT * FROM vacancies "
                             f"WHERE payment > (SELECT AVG(payment) FROM vacancies) ")
@@ -71,9 +66,7 @@ class DBManager:
         '''получает список всех вакансий, в названии которых
         содержатся переданные в метод слова, например python.'''
 
-        with psycopg2.connect(host="localhost", database="company",
-                              user="postgres", password="12345") as conn:
-
+        with get_connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(f"SELECT * FROM vacancies "
                             f"WHERE lower(vacancies_name) LIKE '%{keyword}%' "
